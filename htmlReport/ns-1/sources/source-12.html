@@ -1,0 +1,302 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UnitServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">ptit.com.enghub.service</a>
+</div>
+
+<h1>Coverage Summary for Class: UnitServiceImpl (ptit.com.enghub.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UnitServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.data.crossstore.ChangeSetPersister;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;import ptit.com.enghub.dto.request.UnitRequest;
+&nbsp;import ptit.com.enghub.dto.response.LessonResponse;
+&nbsp;import ptit.com.enghub.dto.response.UnitResponse;
+&nbsp;import ptit.com.enghub.entity.Course;
+&nbsp;import ptit.com.enghub.entity.Unit;
+&nbsp;import ptit.com.enghub.entity.User;
+&nbsp;import ptit.com.enghub.entity.UserProgress;
+&nbsp;import ptit.com.enghub.enums.Level;
+&nbsp;import ptit.com.enghub.mapper.UnitMapper;
+&nbsp;import ptit.com.enghub.repository.CourseRepository;
+&nbsp;import ptit.com.enghub.repository.UnitRepository;
+&nbsp;import ptit.com.enghub.repository.UserProgressRepository;
+&nbsp;import ptit.com.enghub.service.IService.UnitService;
+&nbsp;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;import java.util.OptionalInt;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+<b class="nc">&nbsp;@Slf4j</b>
+&nbsp;public class UnitServiceImpl implements UnitService {
+&nbsp;    private final UnitRepository unitRepository;
+&nbsp;    private final UnitMapper unitMapper;
+&nbsp;    private final CourseRepository courseRepository;
+&nbsp;    private final UserProgressRepository userProgressRepository;
+&nbsp;    private final UserService userService;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public UnitResponse getUnitById(Long id) {
+<b class="nc">&nbsp;        Unit unit = unitRepository.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Unit not found&quot;));</b>
+<b class="nc">&nbsp;        return unitMapper.toResponse(unit);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;UnitResponse&gt; getUnitsByCourseId(Long courseId) {
+<b class="nc">&nbsp;        User user = userService.getCurrentUser();</b>
+<b class="nc">&nbsp;        List&lt;UnitResponse&gt; units = unitRepository.findByCourse_Id(courseId).stream()</b>
+<b class="nc">&nbsp;                .map(unitMapper::toResponse)</b>
+<b class="nc">&nbsp;                .peek(unit -&gt; {</b>
+<b class="nc">&nbsp;                    unit.setLessons(</b>
+<b class="nc">&nbsp;                            unit.getLessons().stream()</b>
+<b class="nc">&nbsp;                                    .sorted(Comparator.comparing(LessonResponse::getOrderIndex))</b>
+<b class="nc">&nbsp;                                    .peek(l -&gt; {</b>
+<b class="nc">&nbsp;                                        boolean completed = userProgressRepository</b>
+<b class="nc">&nbsp;                                                .findByUserIdAndLessonId(user.getId(), l.getId())</b>
+<b class="nc">&nbsp;                                                .map(UserProgress::isCompleted)</b>
+<b class="nc">&nbsp;                                                .orElse(false);</b>
+<b class="nc">&nbsp;                                        l.setCompleted(completed);</b>
+&nbsp;                                    })
+<b class="nc">&nbsp;                                    .collect(Collectors.toList())</b>
+&nbsp;                    );
+&nbsp;                })
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+<b class="nc">&nbsp;        return units;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;//    @Override
+&nbsp;//    public List&lt;UnitResponse&gt; getUnitsByCourseId(Long courseId) {
+&nbsp;//        User user = userService.getCurrentUser();
+&nbsp;//        Level userLevel = user.getLevel();
+&nbsp;//
+&nbsp;//        Course course = courseRepository.findById(courseId)
+&nbsp;//                .orElseThrow(() -&gt; new RuntimeException(&quot;Unit not found&quot;));;
+&nbsp;//
+&nbsp;//        String courseLevelStr = course.getLevel();
+&nbsp;//        Level courseLevel;
+&nbsp;//        try {
+&nbsp;//            courseLevel = Level.valueOf(courseLevelStr.toUpperCase());
+&nbsp;//        } catch (IllegalArgumentException | NullPointerException e) {
+&nbsp;//            courseLevel = null;
+&nbsp;//        }
+&nbsp;//
+&nbsp;//        boolean canAccessCourse = canAccessCourse(userLevel, courseLevel);
+&nbsp;//
+&nbsp;//        List&lt;UnitResponse&gt; units = unitRepository.findByCourse_Id(courseId).stream()
+&nbsp;//                .map(unitMapper::toResponse)
+&nbsp;//                .peek(unit -&gt; {
+&nbsp;//
+&nbsp;//                    List&lt;LessonResponse&gt; lessons = unit.getLessons().stream()
+&nbsp;//                            .sorted(Comparator.comparingInt(LessonResponse::getOrderIndex))
+&nbsp;//                            .collect(Collectors.toList());
+&nbsp;//
+&nbsp;//                    for (LessonResponse l : lessons) {
+&nbsp;//                        boolean completed = userProgressRepository
+&nbsp;//                                .findByUserIdAndLessonId(user.getId(), l.getId())
+&nbsp;//                                .map(UserProgress::isCompleted)
+&nbsp;//                                .orElse(false);
+&nbsp;//                        l.setCompleted(completed);
+&nbsp;//                        l.setUnlock(completed);
+&nbsp;//                        log.info(String.valueOf(completed));
+&nbsp;//                    }
+&nbsp;//
+&nbsp;//                    if (!canAccessCourse || lessons.isEmpty()) {
+&nbsp;//                        unit.setLessons(lessons);
+&nbsp;//                        return;
+&nbsp;//                    }
+&nbsp;//
+&nbsp;//                    OptionalInt lastCompletedIndexOpt = java.util.stream.IntStream
+&nbsp;//                            .range(0, lessons.size())
+&nbsp;//                            .filter(i -&gt; lessons.get(i).isCompleted())
+&nbsp;//                            .max();
+&nbsp;//
+&nbsp;//                    int unlockIndex;
+&nbsp;//                    if (lastCompletedIndexOpt.isPresent()) {
+&nbsp;//                        int lastCompletedIndex = lastCompletedIndexOpt.getAsInt();
+&nbsp;//                        if (lastCompletedIndex + 1 &lt; lessons.size()) {
+&nbsp;//                            unlockIndex = lastCompletedIndex + 1;
+&nbsp;//                        } else {
+&nbsp;//                            unlockIndex = lastCompletedIndex;
+&nbsp;//                        }
+&nbsp;//                    } else {
+&nbsp;//                        unlockIndex = 0;
+&nbsp;//                    }
+&nbsp;//
+&nbsp;//                    lessons.get(unlockIndex).setUnlock(true);
+&nbsp;//
+&nbsp;//                    unit.setLessons(lessons);
+&nbsp;//                })
+&nbsp;//                .collect(Collectors.toList());
+&nbsp;//
+&nbsp;//        return units;
+&nbsp;//    }
+&nbsp;//
+&nbsp;//    private boolean canAccessCourse(Level userLevel, Level courseLevel) {
+&nbsp;//        if (userLevel == null || courseLevel == null) return false;
+&nbsp;//
+&nbsp;//        // BEGINNER &lt; INTERMEDIATE &lt; ADVANCED &lt; PROFICIENCY
+&nbsp;//        return userLevel.ordinal() &gt;= courseLevel.ordinal();
+&nbsp;//    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public UnitResponse createUnit(UnitRequest request) {
+<b class="nc">&nbsp;        Unit unit = unitMapper.toEntity(request);</b>
+&nbsp;
+<b class="nc">&nbsp;        Course course = courseRepository.findById(request.getCourseId())</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Course not found&quot;));</b>
+<b class="nc">&nbsp;        unit.setCourse(course);</b>
+<b class="nc">&nbsp;        unit.setIcon(request.getIcon());</b>
+<b class="nc">&nbsp;        unit.setDescription(request.getDescription());</b>
+<b class="nc">&nbsp;        unit.setOrderIndex(request.getOrderIndex());</b>
+<b class="nc">&nbsp;        unit.setTitle(request.getTitle());</b>
+<b class="nc">&nbsp;        return unitMapper.toResponse(unitRepository.save(unit));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public UnitResponse updateUnit(Long id, UnitRequest request) {
+<b class="nc">&nbsp;        Unit unit = unitRepository.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Unit not found&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        unitMapper.updateUnitFromRequest(request, unit);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (request.getCourseId() != null) {</b>
+<b class="nc">&nbsp;            Course course = courseRepository.findById(request.getCourseId())</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; new RuntimeException(&quot;Course not found&quot;));</b>
+<b class="nc">&nbsp;            unit.setCourse(course);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        unit.setIcon(request.getIcon());</b>
+<b class="nc">&nbsp;        unit.setDescription(request.getDescription());</b>
+<b class="nc">&nbsp;        unit.setOrderIndex(request.getOrderIndex());</b>
+<b class="nc">&nbsp;        unit.setTitle(request.getTitle());</b>
+&nbsp;
+<b class="nc">&nbsp;        return unitMapper.toResponse(unitRepository.save(unit));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public void deleteUnit(Long id) {
+<b class="nc">&nbsp;        if (!unitRepository.existsById(id)) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Unit not found&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        unitRepository.deleteById(id);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-04-19 14:18</div>
+</div>
+</body>
+</html>

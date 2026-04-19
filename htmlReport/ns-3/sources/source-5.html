@@ -1,0 +1,286 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > StudyTrackingService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">ptit.com.enghub.service.dashboard</a>
+</div>
+
+<h1>Coverage Summary for Class: StudyTrackingService (ptit.com.enghub.service.dashboard)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StudyTrackingService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/76)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service.dashboard;
+&nbsp;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import ptit.com.enghub.dto.EndStudyDto;
+&nbsp;import ptit.com.enghub.dto.request.StartStudyRequest;
+&nbsp;import ptit.com.enghub.dto.response.StudyChartResponse;
+&nbsp;import ptit.com.enghub.entity.User;
+&nbsp;import ptit.com.enghub.entity.UserStudyDaily;
+&nbsp;import ptit.com.enghub.entity.UserStudySession;
+&nbsp;import ptit.com.enghub.exception.AppException;
+&nbsp;import ptit.com.enghub.exception.ErrorCode;
+&nbsp;import ptit.com.enghub.repository.UserStudyDailyRepository;
+&nbsp;import ptit.com.enghub.repository.UserStudySessionRepository;
+&nbsp;import ptit.com.enghub.service.UserService;
+&nbsp;
+&nbsp;import java.time.DayOfWeek;
+&nbsp;import java.time.Duration;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.time.format.DateTimeFormatter;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class StudyTrackingService {
+&nbsp;
+&nbsp;    private final UserService userService;
+&nbsp;    private final UserStudySessionRepository sessionRepo;
+&nbsp;    private final UserStudyDailyRepository dailyRepo;
+&nbsp;    private final AchievementChecker checker;
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public EndStudyDto startStudy(StartStudyRequest request) {
+<b class="nc">&nbsp;        User user = userService.getCurrentUser();</b>
+<b class="nc">&nbsp;        if ( !hasSessionToday(user.getId()) ){</b>
+<b class="nc">&nbsp;            checker.onDailyStudy(user.getId());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        UserStudySession session = UserStudySession.builder()</b>
+<b class="nc">&nbsp;                .userId(user.getId())</b>
+<b class="nc">&nbsp;                .startedAt(LocalDateTime.now())</b>
+<b class="nc">&nbsp;                .activityType(request.getActivityType())</b>
+<b class="nc">&nbsp;                .skill(request.getSkill())</b>
+<b class="nc">&nbsp;                .lessonId(request.getLessonId())</b>
+<b class="nc">&nbsp;                .deckId(request.getDeckId())</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;
+<b class="nc">&nbsp;        sessionRepo.save(session);</b>
+<b class="nc">&nbsp;        EndStudyDto response = new EndStudyDto();</b>
+<b class="nc">&nbsp;        response.setSessionId(session.getId());</b>
+<b class="nc">&nbsp;        return response;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void endStudy(EndStudyDto request) {
+<b class="nc">&nbsp;        User user = userService.getCurrentUser();</b>
+&nbsp;        UserStudySession session;
+<b class="nc">&nbsp;        Long sessionId = request.getSessionId();</b>
+<b class="nc">&nbsp;        if (sessionId != null) {</b>
+<b class="nc">&nbsp;            session = sessionRepo.findById(sessionId)</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; new RuntimeException(&quot;Session not found&quot;));</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            session = sessionRepo</b>
+<b class="nc">&nbsp;                    .findTopByUserIdOrderByStartedAtDesc(user.getId())</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; new RuntimeException(&quot;No active session&quot;));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (!session.getUserId().equals(user.getId())) {</b>
+<b class="nc">&nbsp;            throw new AppException(ErrorCode.UNAUTHORIZED);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (session.getEndedAt() != null) return;</b>
+&nbsp;
+<b class="nc">&nbsp;        LocalDateTime now = LocalDateTime.now();</b>
+&nbsp;
+<b class="nc">&nbsp;        session.setEndedAt(now);</b>
+&nbsp;
+<b class="nc">&nbsp;        int minutes = (int) Duration.between(</b>
+<b class="nc">&nbsp;                session.getStartedAt(), now</b>
+<b class="nc">&nbsp;        ).toMinutes();</b>
+&nbsp;
+<b class="nc">&nbsp;        session.setDurationMinutes(Math.max(minutes, 1));</b>
+&nbsp;
+<b class="nc">&nbsp;        sessionRepo.save(session);</b>
+<b class="nc">&nbsp;        LocalDate studyDate = session.getStartedAt().toLocalDate();</b>
+&nbsp;
+<b class="nc">&nbsp;        UserStudyDaily daily = dailyRepo</b>
+<b class="nc">&nbsp;                .findByUserIdAndStudyDate(user.getId(), studyDate)</b>
+<b class="nc">&nbsp;                .orElse(</b>
+<b class="nc">&nbsp;                        UserStudyDaily.builder()</b>
+<b class="nc">&nbsp;                                .userId(user.getId())</b>
+<b class="nc">&nbsp;                                .studyDate(studyDate)</b>
+<b class="nc">&nbsp;                                .totalMinutes(0)</b>
+<b class="nc">&nbsp;                                .sessionCount(0)</b>
+<b class="nc">&nbsp;                                .firstStudyAt(session.getStartedAt())</b>
+<b class="nc">&nbsp;                                .build()</b>
+&nbsp;                );
+&nbsp;
+<b class="nc">&nbsp;        daily.setTotalMinutes(</b>
+<b class="nc">&nbsp;                daily.getTotalMinutes() + session.getDurationMinutes()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        daily.setSessionCount(daily.getSessionCount() + 1);</b>
+<b class="nc">&nbsp;        daily.setLastStudyAt(now);</b>
+&nbsp;
+<b class="nc">&nbsp;        checker.onTotalTimeStudy(user.getId(), session.getDurationMinutes());</b>
+&nbsp;
+<b class="nc">&nbsp;        dailyRepo.save(daily);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;StudyChartResponse&gt; getLast4WeeksWeekdayChart() {
+<b class="nc">&nbsp;        User user = userService.getCurrentUser();</b>
+&nbsp;
+<b class="nc">&nbsp;        LocalDate today = LocalDate.now();</b>
+<b class="nc">&nbsp;        LocalDate currentWeekMonday = today.with(DayOfWeek.MONDAY);</b>
+&nbsp;
+<b class="nc">&nbsp;        LocalDate startMonday = currentWeekMonday.minusWeeks(3);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Object[]&gt; rawData =</b>
+<b class="nc">&nbsp;                dailyRepo.findDailyStudyMinutes(user.getId(), startMonday);</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;LocalDate, Integer&gt; minutesMap = new HashMap&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for (Object[] row : rawData) {</b>
+<b class="nc">&nbsp;            LocalDate date = (LocalDate) row[0];</b>
+<b class="nc">&nbsp;            Number minutes = (Number) row[1];</b>
+&nbsp;
+<b class="nc">&nbsp;            minutesMap.put(</b>
+&nbsp;                    date,
+<b class="nc">&nbsp;                    minutes != null ? minutes.intValue() : 0</b>
+&nbsp;            );
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;dd/MM&quot;);</b>
+<b class="nc">&nbsp;        List&lt;StudyChartResponse&gt; chartData = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for (int week = 0; week &lt; 4; week++) {</b>
+<b class="nc">&nbsp;            LocalDate weekMonday = startMonday.plusWeeks(week);</b>
+<b class="nc">&nbsp;            for (int day = 0; day &lt; 7; day++) {</b>
+<b class="nc">&nbsp;                LocalDate date = weekMonday.plusDays(day);</b>
+&nbsp;
+<b class="nc">&nbsp;                chartData.add(new StudyChartResponse(</b>
+<b class="nc">&nbsp;                        date.format(formatter),</b>
+<b class="nc">&nbsp;                        minutesMap.getOrDefault(date, 0)</b>
+&nbsp;                ));
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return chartData;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public boolean hasSessionToday(Long userId) {
+<b class="nc">&nbsp;        LocalDate today = LocalDate.now();</b>
+&nbsp;
+<b class="nc">&nbsp;        LocalDateTime startOfDay = today.atStartOfDay();</b>
+<b class="nc">&nbsp;        LocalDateTime endOfDay = today.atTime(23, 59, 59);</b>
+&nbsp;
+<b class="nc">&nbsp;        return sessionRepo.existsByUserIdAndStartedAtBetween(</b>
+&nbsp;                userId,
+&nbsp;                startOfDay,
+&nbsp;                endOfDay
+&nbsp;        );
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-04-19 14:18</div>
+</div>
+</body>
+</html>

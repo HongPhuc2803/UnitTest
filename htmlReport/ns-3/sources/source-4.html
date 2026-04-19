@@ -1,0 +1,389 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DashboardService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">ptit.com.enghub.service.dashboard</a>
+</div>
+
+<h1>Coverage Summary for Class: DashboardService (ptit.com.enghub.service.dashboard)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DashboardService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/136)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DashboardService$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/137)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service.dashboard;
+&nbsp;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import ptit.com.enghub.dto.response.dashboard.*;
+&nbsp;import ptit.com.enghub.entity.AchievementProgress;
+&nbsp;import ptit.com.enghub.entity.User;
+&nbsp;import ptit.com.enghub.entity.UserLearningSettings;
+&nbsp;import ptit.com.enghub.enums.StudyActivityType;
+&nbsp;import ptit.com.enghub.enums.StudySkill;
+&nbsp;import ptit.com.enghub.repository.*;
+&nbsp;import ptit.com.enghub.service.UserService;
+&nbsp;
+&nbsp;import java.time.DayOfWeek;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class DashboardService {
+&nbsp;
+&nbsp;    private final UserRepository userRepository;
+&nbsp;    private final LessonRepository lessonRepository;
+&nbsp;    private final SkillRepository skillRepository;
+&nbsp;    private final DeckRepository deckRepository;
+&nbsp;    private final UserStudySessionRepository sessionRepository;
+&nbsp;    private final UserService userService;
+&nbsp;    private final UserStudyDailyRepository dailyRepository;
+&nbsp;    private final UserFlashcardProgressRepository userFlashcardProgressRepository;
+&nbsp;    private final UserProgressRepository userProgressRepository;
+&nbsp;    private final UserSettingsRepository userLearningSettingsRepository;
+&nbsp;    private final AchievementProgressRepository achievementProgressRepository;
+&nbsp;
+&nbsp;    public AdminDashboardResponse getDashboard() {
+&nbsp;
+<b class="nc">&nbsp;        long totalUsers = userRepository.count();</b>
+<b class="nc">&nbsp;        long activeUsers = userRepository.countActiveUsers();</b>
+<b class="nc">&nbsp;        long totalLessons = lessonRepository.count();</b>
+<b class="nc">&nbsp;        long totalSkills = skillRepository.count();</b>
+<b class="nc">&nbsp;        long totalDeck = deckRepository.count();</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;ActivityDataResponse&gt; activityDataResponses = getWeeklyActivityData();</b>
+<b class="nc">&nbsp;        List&lt;ActivitySkillResponse&gt; activitySkillData = getActivitySkillData();</b>
+<b class="nc">&nbsp;        return AdminDashboardResponse.builder()</b>
+<b class="nc">&nbsp;                .totalUsers(totalUsers)</b>
+<b class="nc">&nbsp;                .totalLessons(totalLessons)</b>
+<b class="nc">&nbsp;                .totalSkills(totalSkills)</b>
+<b class="nc">&nbsp;                .activeUsers(activeUsers)</b>
+<b class="nc">&nbsp;                .totalDeck(totalDeck)</b>
+<b class="nc">&nbsp;                .activityData(activityDataResponses)</b>
+<b class="nc">&nbsp;                .activityDataSkill(activitySkillData)</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ActivityDataResponse&gt; getWeeklyActivityData() {
+&nbsp;
+<b class="nc">&nbsp;        LocalDateTime mondayStart = LocalDate.now()</b>
+<b class="nc">&nbsp;                .with(DayOfWeek.MONDAY)</b>
+<b class="nc">&nbsp;                .atStartOfDay();</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Object[]&gt; rawData =</b>
+<b class="nc">&nbsp;                sessionRepository.countActivityByDay(mondayStart);</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;Integer, ActivityDataResponse&gt; map = new HashMap&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        DayOfWeek today = LocalDate.now().getDayOfWeek();</b>
+<b class="nc">&nbsp;        int todayValue = today.getValue();</b>
+<b class="nc">&nbsp;        for (int i = 1; i &lt;= todayValue; i++) {</b>
+<b class="nc">&nbsp;            map.put(i, new ActivityDataResponse(&quot;T&quot; + (i + 1), 0, 0, 0));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        for (Object[] row : rawData) {</b>
+<b class="nc">&nbsp;            Integer dow = ((Number) row[0]).intValue();</b>
+&nbsp;
+<b class="nc">&nbsp;            StudyActivityType type =</b>
+<b class="nc">&nbsp;                    StudyActivityType.valueOf(row[1].toString());</b>
+&nbsp;
+<b class="nc">&nbsp;            int count = ((Number) row[2]).intValue();</b>
+&nbsp;
+<b class="nc">&nbsp;            ActivityDataResponse data = map.get(dow);</b>
+<b class="nc">&nbsp;            if (data == null) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;            switch (type) {</b>
+<b class="nc">&nbsp;                case FLASHCARD -&gt; data.setFlashcards(count);</b>
+<b class="nc">&nbsp;                case LESSON -&gt; data.setLessons(count);</b>
+<b class="nc">&nbsp;                case SKILL -&gt; data.setSkills(count);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return map.values()</b>
+<b class="nc">&nbsp;                .stream()</b>
+<b class="nc">&nbsp;                .sorted(Comparator.comparing(ActivityDataResponse::getName))</b>
+<b class="nc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ActivitySkillResponse&gt; getActivitySkillData() {
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;StudySkill, Integer&gt; skillMap = new EnumMap&lt;&gt;(StudySkill.class);</b>
+<b class="nc">&nbsp;        for (StudySkill skill : StudySkill.values()) {</b>
+<b class="nc">&nbsp;            skillMap.put(skill, 0);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        sessionRepository.countDistinctUsersBySkill()</b>
+<b class="nc">&nbsp;                .forEach(row -&gt; {</b>
+<b class="nc">&nbsp;                    StudySkill skill = (StudySkill) row[0];</b>
+<b class="nc">&nbsp;                    int count = ((Long) row[1]).intValue();</b>
+<b class="nc">&nbsp;                    skillMap.put(skill, count);</b>
+&nbsp;                });
+<b class="nc">&nbsp;        return skillMap.entrySet().stream()</b>
+<b class="nc">&nbsp;                .map(e -&gt; new ActivitySkillResponse(</b>
+<b class="nc">&nbsp;                        e.getKey().name(),</b>
+<b class="nc">&nbsp;                        e.getValue()</b>
+&nbsp;                ))
+<b class="nc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public UserDashboardResponse getDashboardUser() {
+<b class="nc">&nbsp;        User user = userService.getCurrentUser();</b>
+<b class="nc">&nbsp;        LocalDate today = LocalDate.now();</b>
+<b class="nc">&nbsp;        LocalDate startOfWeek = today.with(java.time.DayOfWeek.MONDAY);</b>
+<b class="nc">&nbsp;        LocalDate startOfMonth = today.withDayOfMonth(1);</b>
+&nbsp;
+<b class="nc">&nbsp;        Integer minutesToday = dailyRepository</b>
+<b class="nc">&nbsp;                .sumTotalMinutesByUserAndDateBetween(user.getId(), today, today);</b>
+&nbsp;
+<b class="nc">&nbsp;        Integer minutesWeek = dailyRepository</b>
+<b class="nc">&nbsp;                .sumTotalMinutesByUserAndDateBetween(user.getId(), startOfWeek, today);</b>
+&nbsp;
+<b class="nc">&nbsp;        Integer minutesMonth = dailyRepository</b>
+<b class="nc">&nbsp;                .sumTotalMinutesByUserAndDateBetween(user.getId(), startOfMonth, today);</b>
+<b class="nc">&nbsp;        int timeToday = minutesToday == null ? 0 : minutesToday;</b>
+<b class="nc">&nbsp;        int timeWeek = minutesWeek == null ? 0 : minutesWeek;</b>
+<b class="nc">&nbsp;        int timeMonth = minutesMonth == null ? 0 : minutesMonth;</b>
+&nbsp;
+<b class="nc">&nbsp;        int lessonComplete = userProgressRepository.countByUserIdAndCompletedTrue(user.getId());</b>
+<b class="nc">&nbsp;        int flashcardsStudied = userFlashcardProgressRepository</b>
+<b class="nc">&nbsp;                .countByUserIdAndLastReviewedAtIsNotNull(user.getId());</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        UserLearningSettings settings = userLearningSettingsRepository</b>
+<b class="nc">&nbsp;                .findByUserId(user.getId())</b>
+<b class="nc">&nbsp;                .orElse(null);</b>
+<b class="nc">&nbsp;        int targetDailyStudied = 0;</b>
+<b class="nc">&nbsp;        int targetDaysPerW = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;        if (settings != null) {</b>
+<b class="nc">&nbsp;            if (settings.getDailyStudyMinutes() != null) {</b>
+<b class="nc">&nbsp;                targetDailyStudied = settings.getDailyStudyMinutes();</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (settings.getTargetDaysPerWeek() != null) {</b>
+<b class="nc">&nbsp;                targetDaysPerW = settings.getTargetDaysPerWeek();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        int streakDays = achievementProgressRepository</b>
+<b class="nc">&nbsp;                .findByUserIdAndAchievementId(user.getId(), 1L)</b>
+<b class="nc">&nbsp;                .map(AchievementProgress::getCurrentValue)</b>
+<b class="nc">&nbsp;                .orElse(0);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;ActivityDataResponse&gt; activityDataResponses = getWeeklyActivityDataUser(user.getId());</b>
+<b class="nc">&nbsp;        List&lt;ActivitySkillUserResponse&gt; activitySkillData = getActivitySkillDataUser(user.getId());</b>
+<b class="nc">&nbsp;        return UserDashboardResponse.builder()</b>
+<b class="nc">&nbsp;                .streakDays(streakDays)</b>
+<b class="nc">&nbsp;                .targetDailyStudied(targetDailyStudied)</b>
+<b class="nc">&nbsp;                .targetDaysPerW(targetDaysPerW)</b>
+<b class="nc">&nbsp;                .lessonComplete(lessonComplete)</b>
+<b class="nc">&nbsp;                .flashcardsStudied(flashcardsStudied)</b>
+<b class="nc">&nbsp;                .timeStudyToday(timeToday)</b>
+<b class="nc">&nbsp;                .timeStudyW(timeWeek)</b>
+<b class="nc">&nbsp;                .timeStudyM(timeMonth)</b>
+<b class="nc">&nbsp;                .activityData(activityDataResponses)</b>
+<b class="nc">&nbsp;                .activityDataSkill(activitySkillData)</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ActivityDataResponse&gt; getWeeklyActivityDataUser(Long userId) {
+<b class="nc">&nbsp;        LocalDateTime mondayStart = LocalDate.now()</b>
+<b class="nc">&nbsp;                .with(DayOfWeek.MONDAY)</b>
+<b class="nc">&nbsp;                .atStartOfDay();</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Object[]&gt; rawData =</b>
+<b class="nc">&nbsp;                sessionRepository.countActivityByDay(mondayStart, userId);</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;Integer, ActivityDataResponse&gt; map = new HashMap&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        DayOfWeek today = LocalDate.now().getDayOfWeek();</b>
+<b class="nc">&nbsp;        int todayValue = today.getValue();</b>
+<b class="nc">&nbsp;        for (int i = 1; i &lt;= todayValue; i++) {</b>
+<b class="nc">&nbsp;            map.put(i, new ActivityDataResponse(&quot;T&quot; + (i + 1), 0, 0, 0));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        for (Object[] row : rawData) {</b>
+<b class="nc">&nbsp;            Integer dow = ((Number) row[0]).intValue();</b>
+&nbsp;
+<b class="nc">&nbsp;            StudyActivityType type =</b>
+<b class="nc">&nbsp;                    StudyActivityType.valueOf(row[1].toString());</b>
+&nbsp;
+<b class="nc">&nbsp;            int count = ((Number) row[2]).intValue();</b>
+&nbsp;
+<b class="nc">&nbsp;            ActivityDataResponse data = map.get(dow);</b>
+<b class="nc">&nbsp;            if (data == null) continue;</b>
+&nbsp;
+<b class="nc">&nbsp;            switch (type) {</b>
+<b class="nc">&nbsp;                case FLASHCARD -&gt; data.setFlashcards(count);</b>
+<b class="nc">&nbsp;                case LESSON -&gt; data.setLessons(count);</b>
+<b class="nc">&nbsp;                case SKILL -&gt; data.setSkills(count);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return map.values()</b>
+<b class="nc">&nbsp;                .stream()</b>
+<b class="nc">&nbsp;                .sorted(Comparator.comparing(ActivityDataResponse::getName))</b>
+<b class="nc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ActivitySkillUserResponse&gt; getActivitySkillDataUser(Long userId) {
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;StudySkill, Integer&gt; skillMap = new EnumMap&lt;&gt;(StudySkill.class);</b>
+<b class="nc">&nbsp;        for (StudySkill skill : StudySkill.values()) {</b>
+<b class="nc">&nbsp;            skillMap.put(skill, 0);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        sessionRepository.sumDurationBySkill(userId)</b>
+<b class="nc">&nbsp;                .forEach(row -&gt; {</b>
+<b class="nc">&nbsp;                    StudySkill skill = (StudySkill) row[0];</b>
+<b class="nc">&nbsp;                    int count = ((Long) row[1]).intValue();</b>
+<b class="nc">&nbsp;                    skillMap.put(skill, count);</b>
+&nbsp;                });
+<b class="nc">&nbsp;        return skillMap.entrySet().stream()</b>
+<b class="nc">&nbsp;                .map(e -&gt; new ActivitySkillUserResponse(</b>
+<b class="nc">&nbsp;                        e.getKey().name(),</b>
+<b class="nc">&nbsp;                        e.getValue()</b>
+&nbsp;                ))
+<b class="nc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-04-19 14:18</div>
+</div>
+</body>
+</html>

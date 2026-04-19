@@ -1,0 +1,250 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AIService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">ptit.com.enghub.service</a>
+</div>
+
+<h1>Coverage Summary for Class: AIService (ptit.com.enghub.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AIService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AIService$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.core.ParameterizedTypeReference;
+&nbsp;import org.springframework.http.HttpEntity;
+&nbsp;import org.springframework.http.HttpMethod;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;import ptit.com.enghub.dto.request.AiWordRequest;
+&nbsp;import ptit.com.enghub.dto.request.ExternalDictionaryRequest;
+&nbsp;import ptit.com.enghub.dto.request.aiRequest.*;
+&nbsp;import ptit.com.enghub.dto.response.AiWordResponse;
+&nbsp;import ptit.com.enghub.dto.response.BulkFlashcardResponse;
+&nbsp;import ptit.com.enghub.dto.response.aiResponse.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class AIService {
+&nbsp;    private final RestTemplate restTemplate;
+&nbsp;
+&nbsp;    @Value(&quot;${ai.service.url:http://localhost:8000}&quot;)
+&nbsp;    private String aiServiceUrl;
+&nbsp;
+&nbsp;
+&nbsp;    public AiWordResponse suggestWord(String word) {
+&nbsp;
+<b class="nc">&nbsp;        AiWordRequest request = new AiWordRequest(word);</b>
+<b class="nc">&nbsp;        return restTemplate.postForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/api/suggest-words&quot;,
+&nbsp;                request,
+&nbsp;                AiWordResponse.class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;BulkFlashcardResponse&gt; fetchFlashcards(List&lt;String&gt; words) {
+&nbsp;
+<b class="nc">&nbsp;        ExternalDictionaryRequest request = new ExternalDictionaryRequest();</b>
+<b class="nc">&nbsp;        request.setWord(words);</b>
+&nbsp;
+<b class="nc">&nbsp;        ResponseEntity&lt;List&lt;BulkFlashcardResponse&gt;&gt; response =</b>
+<b class="nc">&nbsp;                restTemplate.exchange(</b>
+&nbsp;                        aiServiceUrl + &quot;/api/generate-flashcards&quot;,
+&nbsp;                        HttpMethod.POST,
+&nbsp;                        new HttpEntity&lt;&gt;(request),
+<b class="nc">&nbsp;                        new ParameterizedTypeReference&lt;&gt;() {}</b>
+&nbsp;                );
+<b class="nc">&nbsp;        return response.getBody();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ChatbotResponse sendMessage(String message, String mode) {
+&nbsp;
+<b class="nc">&nbsp;        ChatbotRequest request = new ChatbotRequest();</b>
+<b class="nc">&nbsp;        request.setMessage(message);</b>
+<b class="nc">&nbsp;        request.setMode(mode);</b>
+&nbsp;
+<b class="nc">&nbsp;        return restTemplate.postForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/chatbot/chat&quot;,
+&nbsp;                request,
+&nbsp;                ChatbotResponse.class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public Variant[] getVariants() {
+<b class="nc">&nbsp;        return restTemplate.getForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/variants&quot;,
+&nbsp;                Variant[].class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public Scenario[] getVariantScenarios() {
+<b class="nc">&nbsp;        return restTemplate.getForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/variants/scenarios&quot;,
+&nbsp;                Scenario[].class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public CreateSessionResponse createSession(CreateSessionRequest request) {
+&nbsp;
+<b class="nc">&nbsp;        return restTemplate.postForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/conversation/session/create&quot;,
+&nbsp;                request,
+&nbsp;                CreateSessionResponse.class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public MessageResponse sendConversationMessage(MessageRequest request) {
+&nbsp;
+<b class="nc">&nbsp;        return restTemplate.postForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/conversation/message&quot;,
+&nbsp;                request,
+&nbsp;                MessageResponse.class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public ScoreWritingResponse scoreWriting(ScoreWritingRequest request) {
+&nbsp;
+<b class="nc">&nbsp;        return restTemplate.postForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/api/score-writing&quot;,
+&nbsp;                request,
+&nbsp;                ScoreWritingResponse.class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public TranslateWordResponse translateWord(String word) {
+&nbsp;
+<b class="nc">&nbsp;        TranslateWordRequest request = new TranslateWordRequest();</b>
+<b class="nc">&nbsp;        request.setWord(word);</b>
+&nbsp;
+<b class="nc">&nbsp;        return restTemplate.postForObject(</b>
+&nbsp;                aiServiceUrl + &quot;/api/translate-word&quot;,
+&nbsp;                request,
+&nbsp;                TranslateWordResponse.class
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-04-19 14:18</div>
+</div>
+</body>
+</html>
