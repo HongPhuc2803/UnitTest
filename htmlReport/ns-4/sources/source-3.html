@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > VerificationTokenService</title>
+  <title>Coverage Report > CommentService</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">ptit.com.enghub.service.IService</a>
 </div>
 
-<h1>Coverage Summary for Class: VerificationTokenService (ptit.com.enghub.service.IService)</h1>
+<h1>Coverage Summary for Class: CommentService (ptit.com.enghub.service.IService)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">VerificationTokenService</td>
+  <td class="name">CommentService</td>
 </tr>
 
 </table>
@@ -41,12 +41,16 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service.IService;
 &nbsp;
-&nbsp;import ptit.com.enghub.entity.User;
+&nbsp;import ptit.com.enghub.dto.request.CommentRequest;
+&nbsp;import ptit.com.enghub.dto.response.CommentResponse;
 &nbsp;
-&nbsp;public interface VerificationTokenService {
-&nbsp;    public void createAndSendVerificationToken(User user);
-&nbsp;    public void sendVerificationEmail(String email, String verificationUrl);
-&nbsp;    public boolean verifyToken(String token);
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface CommentService {
+&nbsp;    CommentResponse createComment(CommentRequest request);
+&nbsp;    List&lt;CommentResponse&gt; getCommentsByLesson(Long lessonId);
+&nbsp;    void likeComment(Long commentId);
+&nbsp;    void unlikeComment(Long commentId);
 &nbsp;}
 </code>
 </pre>
@@ -71,7 +75,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-04-19 14:18</div>
+    <div style="float:right;">generated on 2026-04-19 20:40</div>
 </div>
 </body>
 </html>

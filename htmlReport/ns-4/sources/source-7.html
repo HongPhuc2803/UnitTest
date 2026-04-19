@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > LanguageService</title>
+  <title>Coverage Report > LessonService</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">ptit.com.enghub.service.IService</a>
 </div>
 
-<h1>Coverage Summary for Class: LanguageService (ptit.com.enghub.service.IService)</h1>
+<h1>Coverage Summary for Class: LessonService (ptit.com.enghub.service.IService)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">LanguageService</td>
+  <td class="name">LessonService</td>
 </tr>
 
 </table>
@@ -41,13 +41,22 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service.IService;
 &nbsp;
-&nbsp;
-&nbsp;import ptit.com.enghub.dto.response.LanguageResponse;
+&nbsp;import ptit.com.enghub.dto.LessonSeedData;
+&nbsp;import ptit.com.enghub.dto.request.CompleteLessonRequest;
+&nbsp;import ptit.com.enghub.dto.request.LessonCreationRequest;
+&nbsp;import ptit.com.enghub.dto.response.LessonResponse;
+&nbsp;import ptit.com.enghub.entity.Lesson;
 &nbsp;
 &nbsp;import java.util.List;
 &nbsp;
-&nbsp;public interface LanguageService {
-&nbsp;    List&lt;LanguageResponse&gt; getAllLanguages();
+&nbsp;public interface LessonService {
+&nbsp;    LessonResponse getLesson(Long lessonId);
+&nbsp;    List&lt;LessonResponse&gt; getLessonsByUnitId(Long unitId);
+&nbsp;    void completeLesson(Long lessonId, CompleteLessonRequest request);
+&nbsp;    Lesson createLesson(LessonCreationRequest request);
+&nbsp;    void deleteLesson(Long id);
+&nbsp;    void seedLesson(Long lessonId, LessonSeedData data);
+&nbsp;    LessonResponse updateLesson(Long id, LessonCreationRequest request);
 &nbsp;}
 </code>
 </pre>
@@ -72,7 +81,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-04-19 14:18</div>
+    <div style="float:right;">generated on 2026-04-19 20:40</div>
 </div>
 </body>
 </html>

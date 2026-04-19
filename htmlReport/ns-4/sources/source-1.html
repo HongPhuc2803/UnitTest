@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > AuthenticationService</title>
+  <title>Coverage Report > UnitService</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">ptit.com.enghub.service.IService</a>
 </div>
 
-<h1>Coverage Summary for Class: AuthenticationService (ptit.com.enghub.service.IService)</h1>
+<h1>Coverage Summary for Class: UnitService (ptit.com.enghub.service.IService)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">AuthenticationService</td>
+  <td class="name">UnitService</td>
 </tr>
 
 </table>
@@ -41,33 +41,17 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service.IService;
 &nbsp;
-&nbsp;import com.nimbusds.jose.JOSEException;
-&nbsp;import org.springframework.security.core.Authentication;
-&nbsp;import ptit.com.enghub.dto.request.AuthenticationRequest;
-&nbsp;import ptit.com.enghub.dto.request.IntrospectRequest;
-&nbsp;import ptit.com.enghub.dto.request.RefreshTokenRequest;
-&nbsp;import ptit.com.enghub.dto.request.UserCreationRequest;
-&nbsp;import ptit.com.enghub.dto.response.AuthenticationResponse;
-&nbsp;import ptit.com.enghub.dto.response.IntrospectResponse;
-&nbsp;import ptit.com.enghub.dto.response.SessionResponse;
-&nbsp;import ptit.com.enghub.entity.RefreshToken;
-&nbsp;import ptit.com.enghub.entity.User;
+&nbsp;import ptit.com.enghub.dto.request.UnitRequest;
+&nbsp;import ptit.com.enghub.dto.response.UnitResponse;
 &nbsp;
-&nbsp;import java.text.ParseException;
 &nbsp;import java.util.List;
 &nbsp;
-&nbsp;public interface AuthenticationService {
-&nbsp;    public AuthenticationResponse register(UserCreationRequest request);
-&nbsp;    public AuthenticationResponse authenticate(AuthenticationRequest request);
-&nbsp;    public String generateToken(User user);
-&nbsp;    public RefreshToken generateRefreshToken(User user);
-&nbsp;    public AuthenticationResponse refreshToken(RefreshTokenRequest request);
-&nbsp;    public void logout(RefreshTokenRequest request);
-&nbsp;    public List&lt;SessionResponse&gt; getSessions(String email);
-&nbsp;    public void revokeSession(Long sessionId);
-&nbsp;    public void revokeAllSessions(String email);
-&nbsp;    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException;
-&nbsp;    public Authentication parseToken(String token) throws JOSEException, ParseException;
+&nbsp;public interface UnitService {
+&nbsp;    UnitResponse getUnitById(Long id);
+&nbsp;    List&lt;UnitResponse&gt; getUnitsByCourseId(Long courseId);
+&nbsp;    UnitResponse createUnit(UnitRequest request);
+&nbsp;    UnitResponse updateUnit(Long id, UnitRequest request);
+&nbsp;    void deleteUnit(Long id);
 &nbsp;}
 </code>
 </pre>
@@ -92,7 +76,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-04-19 14:18</div>
+    <div style="float:right;">generated on 2026-04-19 20:40</div>
 </div>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > CommentService</title>
+  <title>Coverage Report > CourseService</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">ptit.com.enghub.service.IService</a>
 </div>
 
-<h1>Coverage Summary for Class: CommentService (ptit.com.enghub.service.IService)</h1>
+<h1>Coverage Summary for Class: CourseService (ptit.com.enghub.service.IService)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">CommentService</td>
+  <td class="name">CourseService</td>
 </tr>
 
 </table>
@@ -41,16 +41,17 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package ptit.com.enghub.service.IService;
 &nbsp;
-&nbsp;import ptit.com.enghub.dto.request.CommentRequest;
-&nbsp;import ptit.com.enghub.dto.response.CommentResponse;
+&nbsp;import ptit.com.enghub.dto.request.CourseRequest;
+&nbsp;import ptit.com.enghub.dto.response.CourseResponse;
 &nbsp;
 &nbsp;import java.util.List;
 &nbsp;
-&nbsp;public interface CommentService {
-&nbsp;    CommentResponse createComment(CommentRequest request);
-&nbsp;    List&lt;CommentResponse&gt; getCommentsByLesson(Long lessonId);
-&nbsp;    void likeComment(Long commentId);
-&nbsp;    void unlikeComment(Long commentId);
+&nbsp;public interface CourseService {
+&nbsp;    List&lt;CourseResponse&gt; getAllCourses();
+&nbsp;    CourseResponse getCourseById(Long id);
+&nbsp;    CourseResponse createCourse(CourseRequest request);
+&nbsp;    CourseResponse updateCourse(Long id, CourseRequest request);
+&nbsp;    void deleteCourse(Long id);
 &nbsp;}
 </code>
 </pre>
@@ -75,7 +76,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-04-19 14:18</div>
+    <div style="float:right;">generated on 2026-04-19 20:40</div>
 </div>
 </body>
 </html>
